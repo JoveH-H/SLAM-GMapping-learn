@@ -33,15 +33,25 @@
 
 #include "slam_gmapping.h"
 
-int
-main(int argc, char** argv)
+/** 
+ * @brief 主函数
+ * @param argc  参数的个数
+ * @param argv  存放指向的字符串参数的指针数组
+ * @return 0    end
+ */
+int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "slam_gmapping");
+    /* 初始化ros节点slam_gmapping */
+    ros::init(argc, argv, "slam_gmapping");
 
-  SlamGMapping gn;
-  gn.startLiveSlam();
-  ros::spin();
+    /* 声明gn，类型为SlamGMapping类 */
+    SlamGMapping gn;
 
-  return(0);
+    /* 启动SLAM */
+    gn.startLiveSlam();
+
+    /* 循环阻塞 */
+    ros::spin();
+
+    return (0);
 }
-
