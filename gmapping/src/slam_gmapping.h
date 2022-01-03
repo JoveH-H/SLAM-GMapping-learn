@@ -129,10 +129,10 @@ private:
     double lsigma_;            /* 扫描匹配概率的激光标准差 */
     double ogain_;             /* 评估可能性时使用的增益 */
     int lskip_;                /* 评估可能性时使用的增益 */
-    double srr_;               /* 平移时平移函数里程误差 */
-    double srt_;               /* 平移时平移旋转里程误差 */
-    double str_;               /* 旋转时平移旋转里程误差 */
-    double stt_;               /* 旋转时平移旋转里程误差 */
+    double srr_;               /* 平移时平移里程误差 */
+    double srt_;               /* 平移时旋转里程误差 */
+    double str_;               /* 旋转时平移里程误差 */
+    double stt_;               /* 旋转时旋转里程误差 */
     double linearUpdate_;      /* 机器每平移该距离后处理一次激光扫描数据 */
     double angularUpdate_;     /* 机器每旋转该弧度后处理一次激光扫描数据 */
     double temporalUpdate_;    /* 如果最新扫描处理的速度比更新速度慢，则处理扫描；小于零的值将关闭基于时间的更新 */
