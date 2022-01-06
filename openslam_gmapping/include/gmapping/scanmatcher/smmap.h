@@ -20,7 +20,7 @@ namespace GMapping
         PointAccumulator(int i) : acc(0, 0), n(0), visits(0) { assert(i == -1); }
         /*after end*/
 
-        inline void update(bool value, const Point &p = Point(0, 0));      /* 点坐标累加函数 */
+        inline void update(bool value, const Point &p = Point(0, 0));      /* 点坐标累积更新函数 */
         inline Point mean() const { return 1. / n * Point(acc.x, acc.y); } /* 求均值 累积量除以计数总量 */
         inline operator double() const { return visits ? (double)n * SIGHT_INC / (double)visits : -1; }
         inline void add(const PointAccumulator &p)
@@ -33,27 +33,31 @@ namespace GMapping
         static const PointAccumulator &Unknown();
         static PointAccumulator *unknown_ptr; /* 标记未知的指针 */
         FloatPoint acc;                       /* 累积点坐标 */
-        int n, visits;                        /* 记录累积的次数和访问的次数 */
+        int n, visits;                        /* 记录累积的次数（占用）和访问的次数（总数量） */
         inline double entropy() const;        /* 求熵 */
     };
 
     /**
-     * @brief 点坐标累加函数
+     * @brief 点坐标累积更新函数
      *
-     * @param value 累加/访问
+     * @param value 是否为占用
      * @param p 点坐标
      */
     void PointAccumulator::update(bool value, const Point &p)
     {
-        if (value)
+        if (value) /* 点坐标占用 */
         {
+            /* 累加占用点坐标 */
             acc.x += static_cast<float>(p.x);
             acc.y += static_cast<float>(p.y);
+            /* 累加访问次数和占用计数 */
             n++;
             visits += SIGHT_INC;
         }
-        else
-            visits++;
+        else /* 点坐标空闲 */
+        {
+            visits++; /* 仅累加访问次数 */
+        }
     }
 
     /**
@@ -69,6 +73,8 @@ namespace GMapping
             return 0;
         /* 二项分布的形式计算 */
         double x = (double)n * SIGHT_INC / (double)visits;
+
+        /* x=1/2时熵最大，即一半数据认为是空闲的，一半认为是占有的，此时要付出的代价最大，可靠性最低 */
         return -(x * log(x) + (1 - x) * log(1 - x));
     }
 

@@ -383,7 +383,7 @@ namespace GMapping
             m_particles.back().previousIndex = 0;
 
             // this is not needed
-            //		m_particles.back().node=new TNode(initialPose, 0, node, 0);
+            // m_particles.back().node=new TNode(initialPose, 0, node, 0);
 
             // we use the root directly
             /* 我们直接使用根结点 */
@@ -609,8 +609,13 @@ namespace GMapping
                 /* 对每个粒子进行初始化 */
                 for (ParticleVector::iterator it = m_particles.begin(); it != m_particles.end(); it++)
                 {
+                    /* 设置有效面积未完成计算标志 */
                     m_matcher.invalidateActiveArea();
+
+                    /* 更新地图有效区域 */
                     m_matcher.computeActiveArea(it->map, it->pose, plainReading);
+
+                    /* 将激光扫描的占用信息注册到栅格地图上 */
                     m_matcher.registerScan(it->map, it->pose, plainReading);
 
                     // cyr: not needed anymore, particles refer to the root in the beginning! 不再需要了，粒子指的是开头的词根!
@@ -620,10 +625,10 @@ namespace GMapping
                     it->node = node;
                 }
             }
-            //		cerr  << "Tree: normalizing, resetting and propagating weights at the end..." ; 最后重新归一化，重置和传播权值
+            // cerr  << "Tree: normalizing, resetting and propagating weights at the end..." ; 最后重新归一化，重置和传播权值
             /* 再次更新粒子权重 */
             updateTreeWeights(false);
-            //		cerr  << ".done!" <<endl;
+            // cerr  << ".done!" <<endl;
 
             delete[] plainReading;      /* 删除临时用于扫描匹配器运算的激光数据 */
             m_lastPartPose = m_odoPose; // update the past pose for the next iteration 为下一次迭代更新上一次的位姿
