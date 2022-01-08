@@ -74,10 +74,19 @@ inline void GridSlamProcessor::scanMatch(const double *plainReading)
         m_infoStream << "Average Scan Matching Score=" << sumScore / m_particles.size() << std::endl;
 }
 
+/**
+ * @brief 粒子权重归一化函数
+ *
+ * 归一化所有粒子权重，计算权重相似度
+ */
 inline void GridSlamProcessor::normalize()
 {
-    // normalize the log m_weights
+    // normalize the log m_weights 归一化log权重
+
+    /* 计算粒子的权重增益 = 1 /（似然度的平滑因子 * size）  */
     double gain = 1. / (m_obsSigmaGain * m_particles.size());
+
+    /* 计算粒子集合中最大的权重 */
     double lmax = -std::numeric_limits<double>::max();
     for (ParticleVector::iterator it = m_particles.begin(); it != m_particles.end(); it++)
     {
@@ -85,24 +94,30 @@ inline void GridSlamProcessor::normalize()
     }
     // cout << "!!!!!!!!!!! maxwaight= "<< lmax << endl;
 
-    m_weights.clear();
-    double wcum = 0;
-    m_neff = 0;
+    m_weights.clear(); /* 粒子权重初始化清除 */
+    double wcum = 0;   /* 累积权重初始化 */
+    m_neff = 0;        /* 相似性初始化 */
+
+    /* 遍历粒子群，更新所有粒子权重范围 */
     for (std::vector<Particle>::iterator it = m_particles.begin(); it != m_particles.end(); it++)
     {
-        m_weights.push_back(exp(gain * (it->weight - lmax)));
-        wcum += m_weights.back();
+        m_weights.push_back(exp(gain * (it->weight - lmax))); /* 更新权重在范围[0,1] */
+        wcum += m_weights.back();                             /* 累积求和权重 */
         // cout << "l=" << it->weight<< endl;
     }
 
-    m_neff = 0;
+    m_neff = 0; /* 相似性初始化 */
+    /* 遍历粒子权重，更新所有粒子权重归一化 */
     for (std::vector<double>::iterator it = m_weights.begin(); it != m_weights.end(); it++)
     {
-        *it = *it / wcum;
+        *it = *it / wcum; /* 权重除以权重和，得到归一化后的粒子权重 */
+
+        /* 累加权重相似度倒数 */
         double w = *it;
-        m_neff += w * w;
+        m_neff += w * w; /*  m_neff会一直小于1，若所有w都比较接近，则m_neff会较小，倒数后就会较大，就说明权重差距较小 */
     }
-    m_neff = 1. / m_neff;
+
+    m_neff = 1. / m_neff; /* 计算权重相似度 */
 }
 
 inline bool GridSlamProcessor::resample(const double *plainReading, int adaptSize, const RangeReading *reading)

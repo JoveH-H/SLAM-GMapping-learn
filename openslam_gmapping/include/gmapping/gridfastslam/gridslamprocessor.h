@@ -38,7 +38,8 @@ namespace GMapping
         /**This class defines the the node of reversed tree in which the trajectories are stored.
            Each node of a tree has a pointer to its parent and a counter indicating the number of childs of a node.
            The tree is updated in a way consistent with the operation performed on the particles.
-       */
+        */
+        /* 定义了存储轨迹的反向树的节点。树的每个节点都有一个指向其父节点的指针和一个指示节点的子节点数量的计数器。 树方式更新操作与粒子的一致。 */
         struct TNode
         {
             /**Constructs a node of the trajectory tree.
@@ -48,36 +49,47 @@ namespace GMapping
              @param parent:    the parent node in the tree
              @param childs:    the number of childs
             */
+            /* 构造轨迹树的节点 */
             TNode(const OrientedPoint &pose, double weight, TNode *parent = 0, unsigned int childs = 0);
 
             /**Destroys a tree node, and consistently updates the tree. If a node whose parent has only one child is deleted,
              also the parent node is deleted. This because the parent will not be reacheable anymore in the trajectory tree.*/
+            /* 销毁树节点，并持续更新树。 如果父节点只有一个子节点被删除，那么父节点也会被删除。这是因为父结点在轨迹树中不再存在。 */
             ~TNode();
 
             /**The pose of the robot*/
+            /* 位姿 */
             OrientedPoint pose;
 
             /**The weight of the particle*/
+            /* 权重 */
             double weight;
 
             /**The sum of all the particle weights in the previous part of the trajectory*/
+            /* 所有粒子权重的总和是轨迹的前一节点的权重累加 */
+            /* 在轨迹的某一节点的粒子权重总和 */
             double accWeight;
 
             double gweight;
 
             /**The parent*/
+            /* 父节点 */
             TNode *parent;
 
             /**The range reading to which this node is associated*/
+            /* 此节点关联的读取范围，即记录激光传感器数据  */
             const RangeReading *reading;
 
             /**The number of childs*/
+            /* 子节点数量 */
             unsigned int childs;
 
             /**counter in visiting the node (internally used)*/
+            /* 访问节点的计数器（内部使用） */
             mutable unsigned int visitCounter;
 
             /**visit flag (internally used)*/
+            /* 访问标志（内部使用） */
             mutable bool flag;
         };
 
@@ -85,41 +97,57 @@ namespace GMapping
         typedef std::deque<GridSlamProcessor::TNode *> TNodeDeque;
 
         /**This class defines a particle of the filter. Each particle has a map, a pose, a weight and retains the current node in the trajectory tree*/
+        /* 该类定义了过滤器的粒子。 每个粒子都有一个映射、一个位姿、一个权重，并在轨迹树中保留当前节点 */
         struct Particle
         {
-            /**constructs a particle, given a map
+            /** constructs a particle, given a map
                 @param map: the particle map
             */
+            /* 构造一个粒子，给定一个映射，参数map：粒子的地图 */
             Particle(const ScanMatcherMap &map);
 
             /** @returns the weight of a particle */
+            /* 返回粒子的权重 */
             inline operator double() const { return weight; }
+
             /** @returns the pose of a particle */
+            /* 返回粒子的位姿 */
             inline operator OrientedPoint() const { return pose; }
+
             /** sets the weight of a particle
-          @param w the weight
+                @param w the weight
             */
+            /* 设置粒子的权重，参数w：权重 */
             inline void setWeight(double w) { weight = w; }
+
             /** The map */
+            /* 地图 */
             ScanMatcherMap map;
+
             /** The pose of the robot */
+            /* 位姿 */
             OrientedPoint pose;
 
             /** The pose of the robot at the previous time frame (used for computing thr odometry displacements) */
+            /* 机器人在前一时间段的位姿(用于计算里程计位移)   */
             OrientedPoint previousPose;
 
             /** The weight of the particle */
+            /* 权重 */
             double weight;
 
             /** The cumulative weight of the particle */
+            /* 累积权重 */
             double weightSum;
 
             double gweight;
 
             /** The index of the previous particle in the trajectory tree */
+            /* 轨迹树中前一个粒子的索引 */
             int previousIndex;
 
             /** Entry to the trajectory tree */
+            /* 轨迹树的指针入口 */
             TNode *node;
         };
 
@@ -268,7 +296,7 @@ namespace GMapping
         std::vector<unsigned int> m_indexes; /* 重采样后的粒子指标（内部用）  */
 
         /**the particle weights (internally used)*/
-        std::vector<double> m_weights; /* 例子权重（内部用） */
+        std::vector<double> m_weights; /* 粒子权重（内部用） */
 
         /**the motion model*/
         MotionModel m_motionModel; /* 运动模型 */
@@ -333,9 +361,9 @@ namespace GMapping
                              const RangeReading *rr = 0);
 
         // tree utilities 树工具
-        void updateTreeWeights(bool weightsAlreadyNormalized = false);
-        void resetTree();
-        double propagateWeights();
+        void updateTreeWeights(bool weightsAlreadyNormalized = false); /* 更新轨迹权重函数 */
+        void resetTree();                                              /* 重置轨迹函数 */
+        double propagateWeights();                                     /* 更新轨迹权重函数 */
     };
 
     typedef std::multimap<const GridSlamProcessor::TNode *, GridSlamProcessor::TNode *> TNodeMultimap;

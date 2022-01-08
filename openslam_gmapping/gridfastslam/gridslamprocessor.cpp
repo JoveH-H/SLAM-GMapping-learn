@@ -287,6 +287,11 @@ namespace GMapping
 
     // HERE STARTS THE BEEF
 
+    /**
+     * @brief 粒子构建函数
+     *
+     * @param m 激光地图对象
+     */
     GridSlamProcessor::Particle::Particle(const ScanMatcherMap &m) : map(m), pose(0, 0, 0), weight(0), weightSum(0), gweight(0), previousIndex(0)
     {
         node = 0;
@@ -434,7 +439,9 @@ namespace GMapping
 
         // write the state of the reading and update all the particles using the motion model
         /* 写入读取的状态，并使用运动模型更新所有的粒子 */
+
         /* 1.通过运动模型进行预测 */
+        /* 遍历粒子群 */
         for (ParticleVector::iterator it = m_particles.begin(); it != m_particles.end(); it++)
         {
             /* 根据运动模型，预测更新最新时刻的粒子群的位姿 */
@@ -584,7 +591,7 @@ namespace GMapping
                 /* 源码为空函数，提供了扩展的可能，和onOdometryUpdate一样 */
                 onScanmatchUpdate();
 
-                /* 3.更新粒子权重 */
+                /* 3.更新粒子轨迹权重 */
                 updateTreeWeights(false);
 
                 /* 一些衡量粒子权重的相似性日志输出 */
@@ -638,6 +645,7 @@ namespace GMapping
             processed = true;           /* 标记当前当前的激光雷达传感器数据已处理 */
 
             // keep ready for the next step 为下一步做好准备
+            /* 遍历粒子群 */
             for (ParticleVector::iterator it = m_particles.begin(); it != m_particles.end(); it++)
             {
                 /* 先前的位姿等于当前位姿 */
