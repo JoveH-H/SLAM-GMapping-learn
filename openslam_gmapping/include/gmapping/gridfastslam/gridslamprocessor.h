@@ -93,8 +93,8 @@ namespace GMapping
             mutable bool flag;
         };
 
-        typedef std::vector<GridSlamProcessor::TNode *> TNodeVector;
-        typedef std::deque<GridSlamProcessor::TNode *> TNodeDeque;
+        typedef std::vector<GridSlamProcessor::TNode *> TNodeVector; /* 声明运动轨迹节点容器 */
+        typedef std::deque<GridSlamProcessor::TNode *> TNodeDeque;   /* 声明运动轨迹节点队列 */
 
         /**This class defines a particle of the filter. Each particle has a map, a pose, a weight and retains the current node in the trajectory tree*/
         /* 该类定义了过滤器的粒子。 每个粒子都有一个映射、一个位姿、一个权重，并在轨迹树中保留当前节点 */
